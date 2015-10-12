@@ -5,6 +5,11 @@
 #include <R.h>
 #include <Rdefines.h>
 #include "svm.h"
+
+#ifdef CV_OMP
+#include <omp.h>
+#endif
+
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
 /*
@@ -105,6 +110,9 @@ void do_cross_validation(struct svm_problem *prob,
 	}
 	PutRNGstate();
 
+#ifdef CV_OMP
+#pragma omp parallel for private(i) schedule(dynamic)
+#endif
 	for(i=0; i<nr_fold; i++)
 	{
 		int begin = i*prob->l/nr_fold;

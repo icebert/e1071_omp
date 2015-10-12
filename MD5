@@ -1,4 +1,4 @@
-09ebbb291a1cbb9ce022209f4fe598c0 *DESCRIPTION
+cfed47191f6bcda9f38ac3ef1119ce78 *DESCRIPTION
 daca9f6af623c7fd1bf06fbdce216f5f *NAMESPACE
 dbf1fc5e33e50fbeb2b34278a62edeed *R/bclust.R
 e42d535057714da65c807409febb5be8 *R/bincombinations.R
@@ -87,13 +87,14 @@ fe077a9a20d0e3349a32a3369758f97e *man/stft.Rd
 a920400b80897304d8c7e7c861a3eabc *man/tune.control.Rd
 1b313aae35e5d8b495366127ec4fd33c *man/tune.wrapper.Rd
 2858342b8f47ab5582a7d89103b10752 *man/write.svm.Rd
-91a866fa6b3b5bebfd66865bf65772f1 *src/Rsvm.c
+f03aa5654b2d5ec5ddb3f97faa6a3bd0 *src/Rsvm.c
+a95f27ef3804fabe0ef0cfeedfc19caf *src/Makevars
 71dbe4e867b5c029eb630a96aee6f552 *src/cmeans.c
 050b21afdf680cb53c7ad07985f34bd6 *src/cshell.c
 3e8de7ef56baf940ba9fb88d6e73617e *src/floyd.c
-8e7b2f9275e069e1acffad08bb0284d6 *src/svm.cpp
-c8ad0af0458e3ae11ecea7fa8194db65 *src/svm.cpp.orig
-ad0676691007efbaa6010cdf31293beb *src/svm.h
+9cb0f31625840865bc798a65421c1133 *src/svm.cpp
+8e7b2f9275e069e1acffad08bb0284d6 *src/svm.cpp.orig
+75ad2594a6cb292d2cc32103a3dc79a4 *src/svm.h
 0cf3205810ff1e471ee07ab3d4c2bfad *tests/clustering.R
 7f8951b054765414b6c2bdf282954286 *vignettes/svm.pdf
 8d514f9eee974393892ce82d056407aa *vignettes/svmdoc.Rnw

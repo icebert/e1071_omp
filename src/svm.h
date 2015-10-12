@@ -1,7 +1,7 @@
 #ifndef _LIBSVM_H
 #define _LIBSVM_H
 
-#define LIBSVM_VERSION 317
+#define LIBSVM_VERSION 320
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,11 +46,9 @@ struct svm_parameter
 	int probability; /* do probability estimates */
 };
 
-/*
 //
 // svm_model
-//
-*/ 
+// 
 struct svm_model
 {
 	struct svm_parameter param;	/* parameter */

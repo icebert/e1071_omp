@@ -30,3 +30,8 @@ Author: David Meyer [aut, cre],
 Maintainer: David Meyer <David.Meyer@R-project.org>
 Repository: CRAN
 Date/Publication: 2015-08-05 18:51:12
+
+Modified by Meng Wang <wangm0855@gmail.com>
+***Implement parallelized svm cross-validation based on OpenMP
+Date: 2015-10-12
+
