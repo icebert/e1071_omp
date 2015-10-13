@@ -1998,11 +1998,13 @@ static double svm_svr_probability(
 	int i;
 	int nr_fold = 5;
 	double *ymv = Malloc(double,prob->l);
+    int    *fold_start = Malloc(int,nr_fold+1);
+    int    *perm = Malloc(int,prob->l);
 	double mae = 0;
 
 	svm_parameter newparam = *param;
 	newparam.probability = 0;
-	svm_cross_validation(prob,&newparam,nr_fold,ymv);
+	svm_cross_validation(prob,&newparam,nr_fold,ymv,fold_start,perm);
 	for(i=0;i<prob->l;i++)
 	{
 		ymv[i]=prob->y[i]-ymv[i];
@@ -2020,6 +2022,8 @@ static double svm_svr_probability(
 	mae /= (prob->l-count);
 	info("Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma= %g\n",mae);
 	free(ymv);
+    free(fold_start);
+    free(perm);
 	return mae;
 }
 
@@ -2352,12 +2356,10 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 }
 
 // Stratified cross validation
-void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, int nr_fold, double *target)
+void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, int nr_fold, double *target, int *fold_start, int *perm)
 {
 	int i;
-	int *fold_start;
 	int l = prob->l;
-	int *perm = Malloc(int,l);
 	int nr_class;
     GetRNGstate();
 	if (nr_fold > l)
@@ -2366,7 +2368,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		//fprintf(stderr,"WARNING: # folds > # data. Will use # folds = # data instead (i.e., leave-one-out cross validation)\n");
         REprintf("WARNING: # folds > # data. Will use # folds = # data instead (i.e., leave-one-out cross validation)\n");
 	}
-	fold_start = Malloc(int,nr_fold+1);
+	
 	// stratified cv may not give leave-one-out rate
 	// Each class to l folds -> some folds may have zero elements
 	if((param->svm_type == C_SVC ||
@@ -2474,9 +2476,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		svm_free_and_destroy_model(&submodel);
 		free(subprob.x);
 		free(subprob.y);
-	}		
-	free(fold_start);
-	free(perm);
+	}
     PutRNGstate();
 }
 

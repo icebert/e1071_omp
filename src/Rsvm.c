@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -87,117 +86,65 @@ void do_cross_validation(struct svm_problem *prob,
 			 double* ctotal1,
 			 double* ctotal2)
 {
-	int i;
+	int i, j;
 	int total_correct = 0;
 	double total_error = 0;
 	double sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
-
-	/* random shuffle */
-	GetRNGstate();
-	for(i=0; i<prob->l; i++)
+    double *target = Malloc(double,prob->l);
+    int    *fold_start = Malloc(int,nr_fold+1);
+    int    *perm = Malloc(int,prob->l);
+    
+    svm_cross_validation(prob,param,nr_fold,target,fold_start,perm);
+    
+    if(param->svm_type == EPSILON_SVR ||
+	   param->svm_type == NU_SVR)
 	{
-	        int j = i+((int) (unif_rand() * (prob->l-i)))%(prob->l-i);
-		struct svm_node *tx;
-		double ty;
-			
-		tx = prob->x[i];
-		prob->x[i] = prob->x[j];
-		prob->x[j] = tx;
-
-		ty = prob->y[i];
-		prob->y[i] = prob->y[j];
-		prob->y[j] = ty;
-	}
-	PutRNGstate();
-
-#ifdef CV_OMP
-#pragma omp parallel for private(i) schedule(dynamic)
-#endif
-	for(i=0; i<nr_fold; i++)
-	{
-		int begin = i*prob->l/nr_fold;
-		int end = (i+1)*prob->l/nr_fold;
-		int j,k;
-		struct svm_problem subprob;
-
-		subprob.l = prob->l-(end-begin);
-		subprob.x = Malloc(struct svm_node*,subprob.l);
-		subprob.y = Malloc(double,subprob.l);
-			
-		k=0;
-		for(j = 0; j < begin; j++)
-		{
-			subprob.x[k] = prob->x[j];
-			subprob.y[k] = prob->y[j];
-			++k;
+		for(i=0;i<nr_fold;i++)
+        {
+            int begin = fold_start[i];
+            int end = fold_start[i+1];
+            double error = 0;
+            for(j=begin;j<end;j++)
+            {
+                double y = prob->y[perm[j]];
+                double v = target[perm[j]];
+                error += (v-y)*(v-y);
+                sumv += v;
+                sumy += y;
+                sumvv += v*v;
+                sumyy += y*y;
+                sumvy += v*y;
+            }
+            cresults[i] = error/(end-begin);
+            total_error += error;
 		}
-		for(j = end; j<prob->l; j++)
-		{
-			subprob.x[k] = prob->x[j];
-			subprob.y[k] = prob->y[j];
-			++k;
-		}
-
-		if(param->svm_type == EPSILON_SVR ||
-		   param->svm_type == NU_SVR)
-		{
-			struct svm_model *submodel = svm_train(&subprob,param);
-			double error = 0;
-			for(j=begin;j<end;j++)
-			{
-				double v = svm_predict(submodel,prob->x[j]);
-				double y = prob->y[j];
-				error += (v-y)*(v-y);
-				sumv += v;
-				sumy += y;
-				sumvv += v*v;
-				sumyy += y*y;
-				sumvy += v*y;
-			}
-			svm_free_and_destroy_model(&submodel);
-			/* printf("Mean squared error = %g\n",
-			   error/(end-begin)); */
-			cresults[i] = error/(end-begin);
-			total_error += error;			
-		}
-		else
-		{
-			struct svm_model *submodel = svm_train(&subprob,param);
-			int correct = 0;
-			for(j=begin;j<end;j++)
-			{
-				double v = svm_predict(submodel,prob->x[j]);
-				if(v == prob->y[j])
-					++correct;
-			}
-			svm_free_and_destroy_model(&submodel);
-			/* printf("Accuracy = %g%% (%d/%d)\n", */
-			/* 100.0*correct/(end-begin),correct,(end-begin)); */
-			cresults[i] = 100.0*correct/(end-begin);
-			total_correct += correct;
-		}
-
-		free(subprob.x);
-		free(subprob.y);
-	}
-	
-	if(param->svm_type == EPSILON_SVR || param->svm_type == NU_SVR)
-	{
-	    /* printf("Cross Validation Mean squared error = %g\n",total_error/prob.l);
-	        printf("Cross Validation Squared correlation coefficient = %g\n",
-	    	((prob.l*sumvy-sumv*sumy)*(prob.l*sumvy-sumv*sumy))/
-	    	((prob.l*sumvv-sumv*sumv)*(prob.l*sumyy-sumy*sumy))
-	    	); */
-	    *ctotal1 = total_error/prob->l;
+        
+		*ctotal1 = total_error/prob->l;
 	    *ctotal2 = ((prob->l * sumvy - sumv * sumy) *
 			(prob->l * sumvy - sumv*sumy))  /
 		       ((prob->l * sumvv - sumv * sumv) *
 		        (prob->l * sumyy - sumy * sumy));
 	}
 	else
-	    /* printf("Cross Validation Accuracy =
-	       %g%%\n",100.0*total_correct/prob.l); */
-	    *ctotal1 = 100.0 * total_correct / prob->l;
+	{
+		for(i=0;i<nr_fold;i++)
+        {
+            int begin = fold_start[i];
+            int end = fold_start[i+1];
+            int correct = 0;
+            for(j=begin;j<end;j++)
+                if(target[perm[j]] == prob->y[perm[j]])
+                    ++correct;
+            cresults[i] = 100.0*correct/(end-begin);
+            total_correct += correct;
+        }
+        
+        *ctotal1 = 100.0 * total_correct / prob->l;
+	}
+    
+    free(target);
+    free(fold_start);
+    free(perm);
 }
 
 
