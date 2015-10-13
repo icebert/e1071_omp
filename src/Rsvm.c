@@ -276,50 +276,54 @@ void svmtrain (double *x, int *r, int *c,
     
     /* check parameters & copy error message */
     s = svm_check_parameter(&prob, &par);
-    if (s) {
-	strcpy(*error, s);
-    } else {
+    if (s)
+    {
+        strcpy(*error, s);
+    }
+    else
+    {
+        if (*cross == 0)
+        {
+            /* call svm_train */
+            model = svm_train(&prob, &par);
+            
+            /* set up return values */
 
-	/* call svm_train */
-	model = svm_train(&prob, &par);
-    
-	/* set up return values */
+            /*	for (ii = 0; ii < model->l; ii++)
+                for (i = 0; i < *r;	i++)
+                if (prob.x[i] == model->SV[ii]) index[ii] = i+1; */
+            svm_get_sv_indices(model, index);
+            
+            *nr  = model->l;
+            *nclasses = model->nr_class;
+            memcpy (rho, model->rho, *nclasses * (*nclasses - 1)/2 * sizeof(double));
 
-	/*	for (ii = 0; ii < model->l; ii++)
-	    for (i = 0; i < *r;	i++)
-	    if (prob.x[i] == model->SV[ii]) index[ii] = i+1; */
-	svm_get_sv_indices(model, index);
-	
-	*nr  = model->l;
-	*nclasses = model->nr_class;
-	memcpy (rho, model->rho, *nclasses * (*nclasses - 1)/2 * sizeof(double));
+            if (*probability && par.svm_type != ONE_CLASS) {
+              if (par.svm_type == EPSILON_SVR || par.svm_type == NU_SVR)
+                *sigma = svm_get_svr_probability(model);
+              else {
+                memcpy(probA, model->probA, 
+                    *nclasses * (*nclasses - 1)/2 * sizeof(double));
+                memcpy(probB, model->probB, 
+                    *nclasses * (*nclasses - 1)/2 * sizeof(double));
+              }
+            }
 
-	if (*probability && par.svm_type != ONE_CLASS) {
-	  if (par.svm_type == EPSILON_SVR || par.svm_type == NU_SVR)
-	    *sigma = svm_get_svr_probability(model);
-	  else {
-	    memcpy(probA, model->probA, 
-		    *nclasses * (*nclasses - 1)/2 * sizeof(double));
-	    memcpy(probB, model->probB, 
-		    *nclasses * (*nclasses - 1)/2 * sizeof(double));
-	  }
-	}
-
-	for (i = 0; i < *nclasses-1; i++)
-	    memcpy (coefs + i * *nr, model->sv_coef[i],  *nr * sizeof (double));
-	
-	if (*svm_type < 2) {
-	    memcpy (labels, model->label, *nclasses * sizeof(int));
-	    memcpy (nSV, model->nSV, *nclasses * sizeof(int));
-	}
-	
-	/* Perform cross-validation, if requested */
-	if (*cross > 0)
-	    do_cross_validation (&prob, &par, *cross, cresults,
-				 ctotal1, ctotal2);
-
-	/* clean up memory */
-	svm_free_and_destroy_model(&model);
+            for (i = 0; i < *nclasses-1; i++)
+                memcpy (coefs + i * *nr, model->sv_coef[i],  *nr * sizeof (double));
+            
+            if (*svm_type < 2) {
+                memcpy (labels, model->label, *nclasses * sizeof(int));
+                memcpy (nSV, model->nSV, *nclasses * sizeof(int));
+            }
+            
+            /* clean up memory */
+            svm_free_and_destroy_model(&model);
+        }
+        else
+            /* Perform cross-validation, if requested */
+            do_cross_validation(&prob, &par, *cross, cresults,
+                     ctotal1, ctotal2);
     }
     
     /* clean up memory */
