@@ -92,7 +92,7 @@ a95f27ef3804fabe0ef0cfeedfc19caf *src/Makevars
 71dbe4e867b5c029eb630a96aee6f552 *src/cmeans.c
 050b21afdf680cb53c7ad07985f34bd6 *src/cshell.c
 3e8de7ef56baf940ba9fb88d6e73617e *src/floyd.c
-99d1322d40fbbf69e6ac45a247477647 *src/svm.cpp
+3c4721997cc70bc50fac309282511a80 *src/svm.cpp
 8e7b2f9275e069e1acffad08bb0284d6 *src/svm.cpp.orig
 c36789cbcc2c494f4959e1e48f2f6132 *src/svm.h
 0cf3205810ff1e471ee07ab3d4c2bfad *tests/clustering.R

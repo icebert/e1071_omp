@@ -2443,7 +2443,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 	}
 
 #ifdef CV_OMP
-#pragma omp parallel for private(i) schedule(dynamic)
+#pragma omp parallel for private(i) schedule(static)
 #endif
 	for(i=0;i<nr_fold;i++)
 	{
