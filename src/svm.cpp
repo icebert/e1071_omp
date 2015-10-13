@@ -69,6 +69,20 @@ static void info(const char *fmt,...)
 static void info(const char *fmt,...) {}
 #endif
 
+
+
+static inline int rand_int(const int max)
+{
+	static int seed = omp_get_thread_num();
+
+#pragma omp threadprivate(seed)
+	seed = ((seed * 1103515245) + 12345) & 0x7fffffff;
+	return seed%max;
+}
+
+
+
+
 //
 // Kernel Cache
 //
@@ -1912,15 +1926,12 @@ static void svm_binary_svc_probability(
 	double *dec_values = Malloc(double,prob->l);
 
 	// random shuffle
-    GetRNGstate();
 	for(i=0;i<prob->l;i++) perm[i]=i;
 	for(i=0;i<prob->l;i++)
 	{
-		//int j = i+rand()%(prob->l-i);
-		int j = i+((int) (unif_rand() * (prob->l-i))) % (prob->l-i);
+		int j = i+rand_int(prob->l-i);
         swap(perm[i],perm[j]);
 	}
-    PutRNGstate();
 	for(i=0;i<nr_fold;i++)
 	{
 		int begin = i*prob->l/nr_fold;
@@ -2361,7 +2372,6 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 	int i;
 	int l = prob->l;
 	int nr_class;
-    GetRNGstate();
 	if (nr_fold > l)
 	{
 		nr_fold = l;
@@ -2388,8 +2398,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		for (c=0; c<nr_class; c++) 
 			for(i=0;i<count[c];i++)
 			{
-				//int j = i+rand()%(count[c]-i);
-                int j = i+((int) (unif_rand() * (count[c]-i)))%(count[c]-i);
+				int j = i+rand_int(count[c]-i);
 				swap(index[start[c]+j],index[start[c]+i]);
 			}
 		for(i=0;i<nr_fold;i++)
@@ -2426,8 +2435,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		for(i=0;i<l;i++) perm[i]=i;
 		for(i=0;i<l;i++)
 		{
-			//int j = i+rand()%(l-i);
-            int j = i+((int) (unif_rand() * (l-i)))%(l-i);
+			int j = i+rand_int(l-i);
 			swap(perm[i],perm[j]);
 		}
 		for(i=0;i<=nr_fold;i++)
@@ -2477,7 +2485,6 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		free(subprob.x);
 		free(subprob.y);
 	}
-    PutRNGstate();
 }
 
 
