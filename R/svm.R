@@ -90,7 +90,9 @@ function (x,
     if(is.null(nu)) stop(sQuote("nu"), " must not be NULL!")
     if(is.null(epsilon)) stop(sQuote("epsilon"), " must not be NULL!")
     if(is.null(tolerance)) stop(sQuote("tolerance"), " must not be NULL!")
-
+    
+    if (cross > 0) fitted <- FALSE
+    
     xhold   <- if (fitted) x else NULL
     x.scale <- y.scale <- NULL
     formula <- inherits(x, "svm.formula")

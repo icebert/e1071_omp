@@ -31,7 +31,7 @@ ac88f22d04fa8e5745033f4b67bb8beb *R/moment.R
 c81f35fe8c448b8d8f054e77ded9c3fb *R/skewness.R
 c4cd8ad63c2a83981ab9637b5d62ab54 *R/sparse.R
 bed8f86b4b9c45ebf4c847960b7a6824 *R/stft.R
-780d8db1311a5d8c5bb23ad58a97a514 *R/svm.R
+2ad11038b4e9670ac5c16eb409dc04f2 *R/svm.R
 5a7d69231975994a048353bc896c1a44 *R/tune.R
 ce98a8de7d8c04ed4b53552152ccad7b *build/vignette.rds
 fb6b792a9e8e2594594fa576710065cf *cleanup
