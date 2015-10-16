@@ -5,9 +5,6 @@
 #include <Rdefines.h>
 #include "svm.h"
 
-#ifdef CV_OMP
-#include <omp.h>
-#endif
 
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 

@@ -75,7 +75,9 @@ static inline int rand_int(const int max)
 {
 	static int seed = omp_get_thread_num();
 
+#ifdef CV_OMP
 #pragma omp threadprivate(seed)
+#endif
 	seed = ((seed * 1103515245) + 12345) & 0x7fffffff;
 	return seed%max;
 }

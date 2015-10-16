@@ -87,12 +87,12 @@ fe077a9a20d0e3349a32a3369758f97e *man/stft.Rd
 a920400b80897304d8c7e7c861a3eabc *man/tune.control.Rd
 1b313aae35e5d8b495366127ec4fd33c *man/tune.wrapper.Rd
 2858342b8f47ab5582a7d89103b10752 *man/write.svm.Rd
-c50ec6f759db5b1e0bf1f6aed7574f2a *src/Rsvm.c
+3483a4f53a893d7710ba1e95e441b598 *src/Rsvm.c
 a95f27ef3804fabe0ef0cfeedfc19caf *src/Makevars
 71dbe4e867b5c029eb630a96aee6f552 *src/cmeans.c
 050b21afdf680cb53c7ad07985f34bd6 *src/cshell.c
 3e8de7ef56baf940ba9fb88d6e73617e *src/floyd.c
-3c4721997cc70bc50fac309282511a80 *src/svm.cpp
+4a151759e1ace75ad0b4dc67e8d96a7b *src/svm.cpp
 8e7b2f9275e069e1acffad08bb0284d6 *src/svm.cpp.orig
 c36789cbcc2c494f4959e1e48f2f6132 *src/svm.h
 0cf3205810ff1e471ee07ab3d4c2bfad *tests/clustering.R
